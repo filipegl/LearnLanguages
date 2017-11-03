@@ -1,38 +1,12 @@
 <html ng-app="listaTelefonica">
 <head>
+	<meta charset="UTF-8">
 	<title>Lista Telefonica</title>
 	<link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css">
-	<style>
-		.jumbotron {
-			width: 400px;
-			text-align: center;
-			margin-top: 20px;
-			margin-left: auto;
-			margin-right: auto;
-		}
-		.table{
-			margin-top: 20px;
-		}
-		.form-control {
-			margin-bottom: 5px;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="css/app.css">
 	<script src="lib/angular/angular.js"></script>
-	<script>
-		angular.module("listaTelefonica", []);
-		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope) {
-			$scope.app = "Lista Telefonica";
-			$scope.contatos = [
-				{nome: "Rebeca", telefone: "985845432"},
-				{nome: "Filipe", telefone: "996240715"},
-				{nome: "Maria", telefone: "985346890"} 
-			];
-			$scope.adicionarContato = function (contato) {
-				$scope.contatos.push(angular.copy(contato));
-				delete $scope.contato; 
-			}
-			});
-	</script>
+	<script src="js/app.js"></script>
+	<script src="js/controllers/listaTelefonicaCtrl.js"></script>
 </head>
 
 <body>
@@ -40,23 +14,35 @@
 		<div class="jumbotron">
 			<!-- <h4 ng-bind="app"></h4>	-->
 			<h3>{{app}}</h3>
-			<table class="table table-striped">
+			<input class="form-control" type="text" ng-model="busca" placeholder="O que você está buscando?">
+			<table ng-hide="contatos.length == 0" class="table table-striped">
 				<tr>
 					<th>Nome</th>
 					<th>Telefone</th>
+					<th>Operadora</th>
+					<th>Data</th>
 				</tr>
-				<tr ng-repeat="contato in contatos">
+				<!--Filtro: orderBy:'nome' -->
+				<tr ng-repeat="c in contatos | filter: busca">
 					<!--<td ng-repeat="(key,value) in contato"> {{value}} </td> -->
-					<td>{{contato.nome}}</td>
-					<td>{{contato.telefone}}</td>
+					<td>{{c.nome}}</td>
+					<td>{{c.telefone}}</td>
+					<td>{{c.operadora.nome}}</td>
+					<td>{{c.data | date:'dd/MM/yyyy HH:mm'}}</td>
 				</tr>
 			</table>
 			<hr/>
+
 			<input class="form-control" type="text" ng-model="contato.nome" placeholder="Nome">
 			<input class="form-control" type="text" ng-model="contato.telefone" placeholder="Telefone">
-			<button class="btn btn-primary btn-block" ng-click="adicionarContato(contato)">Add contact</button>
-			{{contato}}
+			<select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
+				<option value="">Selecione uma operadora</option>
+			</select>
+ 
+			<button class="btn btn-primary btn-block" ng-click="adicionarContato(contato)" ng-disabled="!contato.nome || !contato.telefone">Add contact</button>
+			<button class="btn btn-danger btn-block" ng-click="apagarContato()" ng-show= "contatos.length > 0">Remove last contact</button>
 		</div>
+		<div ng-include= "'view/footer.html'"></div>
 	</div>
 </body>
 
